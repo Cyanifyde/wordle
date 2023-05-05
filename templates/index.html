@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script>
+        function setInputFocus(element, event) {
+            if (event.key === "Backspace" && element.value.length === 0) {
+                const prev = element.previousElementSibling;
+                if (prev) {
+                    prev.focus();
+                }
+            } else if (event.key === "Enter") {
+                element.form.submit();
+            } else if (element.value.length === 1) {
+                const next = element.nextElementSibling;
+                if (next) {
+                    next.focus();
+                }
+            }
+        }
+        function focusFirstInput() {
+            const firstInput = document.querySelector("input[name='letter0']");
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }
+        window.addEventListener("click", function() {
+			focusFirstInput();
+		});
+
+        document.addEventListener("DOMContentLoaded", () => {
+            focusFirstInput();
+        });
+    </script>
+</head>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="popup fixed inset-x-0 bottom-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center animate__animated animate__fadeIn">
+            <div class="fixed inset-0 transition-opacity">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+                
+                
+                    {% for category, message in messages %}
+                {% if category =="warning"%}
+                <div class="bg-orange-500 py-4 px-4">
+                    <h2 class="text-xl font-bold text-white">{{category}}</h2>
+                </div>
+                <div class="px-4 py-3">
+                        <div class="mt-2 text-sm text-gray-600">{{ message }}</div>
+                    </div>
+                    
+
+                {% elif category =="win"%}
+                <div class="bg-green-500 py-4 px-4">
+                    <h2 class="text-xl font-bold text-white">{{category}}</h2>
+                </div>
+                <div class="px-4 py-3">
+                        <div class="mt-2 text-sm text-gray-600">{{ message }}</div>
+                    </div>
+
+                {% endif %}
+                {% endfor %}
+                <div class="bg-gray-100 py-2 px-4 flex justify-end">
+                    <button type="button" class="text-sm font-medium text-orange-500 hover:text-orange-700 focus:outline-none focus:underline transition ease-in-out duration-150" onclick="this.parentElement.parentElement.parentElement.remove();">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endwith %}
+
+<body class="bg-gray-100">
+    <div class="container mx-auto mt-10">
+        <h1 class="text-4xl font-bold mb-5 text-center animate__animated animate__bounceIn">Wordle</h1>
+        <div class="mt-10">
+            <h2 class="text-2xl font-bold mb-5 text-center animate__animated animate__fadeIn">Previous Attempts</h2>
+            <div class="flex flex-col-reverse gap-4">
+                {% for attempt in attempts %}
+                    <div class="flex justify-center animate__animated animate__fadeIn">
+                        {% for letter, cls in attempt %}
+                        <div class="w-10 h-10 text-center {{ cls }} border border-gray-300">
+                            {{ letter }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <form action="/play" method="post" class="flex justify-center mt-10">
+            {% for i in range(5) %}
+            <input type="text" name="letter{{ i }}" maxlength="1" class="border p-2 w-10 text-center mx-1" onkeydown="setInputFocus(this, event)" autocomplete="off" required>
+            {% endfor %}
+        </form>
+    </div>
+</body>
+</html>
+<style>
+    .bg-orange-500 { background-color: #ed8936; }
+    .popup {
+    z-index: 9999;
+}
+
+</style>
