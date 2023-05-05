@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, flash
 import random
 import os
-import threading
-import pickle
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -104,10 +102,6 @@ def play():
 @app.route('/play', methods=['GET'])
 def plays():
     return redirect("/")
-
-@app.route('/words_data')
-def words_datas():
-    return render_template('words_data.html', data=words_data)
 
 def get_wordle():
     if 'wordle' not in session:
